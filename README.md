@@ -138,5 +138,3 @@ python main.py
 ## Author
 
 **Aadya Nair**
-
-````
