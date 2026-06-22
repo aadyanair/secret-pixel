@@ -22,7 +22,21 @@ def hide_flow():
         print("Error: Secret message cannot be empty.")
         return
 
-    analysis = analyze_message_capacity(image_path, secret_message)
+    use_password = input("Do you want to password-protect this message? (yes/no): ").strip().lower()
+    password = None
+
+    if use_password == "yes":
+        password = input("Enter password: ").strip()
+        if not password:
+            print("Error: Password cannot be empty.")
+            return
+
+    # For capacity analysis, use the actual stored message
+    analysis_message = secret_message
+    if password:
+        analysis_message = "ENC::" + secret_message  # rough estimate for now
+
+    analysis = analyze_message_capacity(image_path, analysis_message)
 
     if analysis is None:
         return
@@ -38,7 +52,7 @@ def hide_flow():
         return
 
     print("Status: Message fits. Proceeding to hide it...\n")
-    hide_message(image_path, secret_message, output_path)
+    hide_message(image_path, secret_message, output_path, password)
 
 
 def extract_flow():
@@ -47,7 +61,16 @@ def extract_flow():
         print("Error: Image path cannot be empty.")
         return
 
-    message = extract_message(image_path)
+    use_password = input("Do you want to provide a password for extraction? (yes/no): ").strip().lower()
+    password = None
+
+    if use_password == "yes":
+        password = input("Enter password: ").strip()
+        if not password:
+            print("Error: Password cannot be empty.")
+            return
+
+    message = extract_message(image_path, password)
     print("Recovered Message:", message)
 
 

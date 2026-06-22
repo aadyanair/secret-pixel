@@ -1,7 +1,8 @@
 from PIL import Image
-from utils import text_to_binary
+from utils import text_to_binary, encrypt_message, decrypt_message
 
 END_MARKER = "#####"
+ENC_PREFIX = "ENC::"
 
 
 def get_image_capacity(image_path):
@@ -41,7 +42,7 @@ def analyze_message_capacity(image_path, secret_message):
     }
 
 
-def hide_message(image_path, secret_message, output_path):
+def hide_message(image_path, secret_message, output_path, password=None):
     if not secret_message:
         print("Error: Secret message cannot be empty.")
         return
@@ -51,6 +52,10 @@ def hide_message(image_path, secret_message, output_path):
 
         if img.mode != "RGB":
             img = img.convert("RGB")
+
+        # Encrypt message if password is provided
+        if password:
+            secret_message = ENC_PREFIX + encrypt_message(secret_message, password)
 
         full_message = secret_message + END_MARKER
         binary_message = text_to_binary(full_message)
@@ -93,7 +98,7 @@ def hide_message(image_path, secret_message, output_path):
         print("Error hiding message:", e)
 
 
-def extract_message(image_path):
+def extract_message(image_path, password=None):
     try:
         img = Image.open(image_path)
 
@@ -120,7 +125,22 @@ def extract_message(image_path):
             extracted_text += chr(int(byte, 2))
 
             if extracted_text.endswith(END_MARKER):
-                return extracted_text[:-len(END_MARKER)]
+                extracted_text = extracted_text[:-len(END_MARKER)]
+
+                # Check if encrypted
+                if extracted_text.startswith(ENC_PREFIX):
+                    encrypted_payload = extracted_text[len(ENC_PREFIX):]
+
+                    if not password:
+                        return "This message is password-protected. Please provide a password."
+
+                    decrypted = decrypt_message(encrypted_payload, password)
+                    if decrypted is None:
+                        return "Wrong password or corrupted message."
+
+                    return decrypted
+
+                return extracted_text
 
         return "No hidden message found."
 
