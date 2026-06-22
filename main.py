@@ -31,12 +31,7 @@ def hide_flow():
             print("Error: Password cannot be empty.")
             return
 
-    # For capacity analysis, use the actual stored message
-    analysis_message = secret_message
-    if password:
-        analysis_message = "ENC::" + secret_message  # rough estimate for now
-
-    analysis = analyze_message_capacity(image_path, analysis_message)
+    analysis = analyze_message_capacity(image_path, secret_message, password)
 
     if analysis is None:
         return

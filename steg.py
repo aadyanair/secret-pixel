@@ -23,11 +23,15 @@ def get_image_capacity(image_path):
         return None, None
 
 
-def analyze_message_capacity(image_path, secret_message):
+def analyze_message_capacity(image_path, secret_message, password=None):
     total_bits, total_chars = get_image_capacity(image_path)
 
     if total_bits is None:
         return None
+
+    # If password is provided, calculate actual encrypted payload size
+    if password:
+        secret_message = ENC_PREFIX + encrypt_message(secret_message, password)
 
     full_message = secret_message + END_MARKER
     binary_message = text_to_binary(full_message)
