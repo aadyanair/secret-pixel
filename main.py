@@ -73,7 +73,6 @@ def extract_flow():
     message = extract_message(image_path, password)
     print("Recovered Message:", message)
 
-
 def capacity_flow():
     image_path = input("Enter path of the image: ").strip()
     if not image_path:
@@ -85,7 +84,6 @@ def capacity_flow():
     if total_bits is not None:
         print("Total bits available:", total_bits)
         print("Approx max characters:", total_chars)
-
 
 def main():
     while True:
@@ -103,7 +101,6 @@ def main():
             break
         else:
             print("Invalid choice. Please enter a number from 1 to 4.")
-
 
 if __name__ == "__main__":
     main()
